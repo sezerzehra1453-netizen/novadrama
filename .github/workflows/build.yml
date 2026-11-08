@@ -19,6 +19,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.2.1'
+          cache-disabled: true
 
       - name: Accept Android Licenses & SDK
         run: |
@@ -36,7 +37,7 @@ jobs:
       - name: Build APK and AAB
         run: |
           cd android
-          gradle assembleDebug bundleRelease --stacktrace
+          gradle assembleDebug bundleRelease --no-daemon --no-parallel --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
