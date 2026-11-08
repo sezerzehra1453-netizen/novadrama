@@ -15,6 +15,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Install Gradle 8.2.1
+        run: |
+          curl -sSL "https://downloads.gradle.org/distributions/gradle-8.2.1-bin.zip" -o gradle.zip
+          sudo unzip -q gradle.zip -d /opt
+          echo "/opt/gradle-8.2.1/bin" >> $GITHUB_PATH
+
       - name: Accept Android Licenses & SDK
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
@@ -31,7 +37,7 @@ jobs:
       - name: Build APK and AAB
         run: |
           cd android
-          gradle assembleDebug bundleRelease --no-daemon --stacktrace
+          /opt/gradle-8.2.1/bin/gradle :app:assembleDebug :app:bundleRelease --no-daemon --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
