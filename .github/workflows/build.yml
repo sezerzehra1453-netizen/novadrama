@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -15,18 +15,12 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Install Gradle 8.2.1
-        run: |
-          curl -sSL "https://downloads.gradle.org/distributions/gradle-8.2.1-bin.zip" -o gradle.zip
-          sudo unzip -q gradle.zip -d /opt
-          echo "/opt/gradle-8.2.1/bin" >> $GITHUB_PATH
-
-      - name: Accept Android Licenses & SDK
+      - name: Accept Android Licenses
         run: |
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
           $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
-      - name: Fix Android SDK Versions
+      - name: Fix Android Versions
         run: |
           find android/ -name "*.gradle" -exec sed -i 's/compileSdk 36/compileSdk 34/g' {} +
           find android/ -name "*.gradle" -exec sed -i 's/compileSdkVersion 36/compileSdkVersion 34/g' {} +
@@ -37,7 +31,12 @@ jobs:
       - name: Build APK and AAB
         run: |
           cd android
-          /opt/gradle-8.2.1/bin/gradle :app:assembleDebug :app:bundleRelease --no-daemon --stacktrace
+          chmod +x gradlew || true
+          if [ -f "./gradlew" ]; then
+            ./gradlew :app:assembleDebug :app:bundleRelease --stacktrace
+          else
+            gradle :app:assembleDebug :app:bundleRelease --stacktrace
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
