@@ -15,11 +15,11 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.2.1'
-          cache-disabled: true
+      - name: Install Gradle 8.2.1 Manual
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.2.1-bin.zip
+          unzip -q gradle-8.2.1-bin.zip -d /opt/gradle
+          echo "/opt/gradle/gradle-8.2.1/bin" >> $GITHUB_PATH
 
       - name: Accept Android Licenses & SDK
         run: |
